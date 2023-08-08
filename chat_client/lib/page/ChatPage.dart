@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'ChatMessage.dart';
-import 'WebSocketManager.dart';
+import '../dto/chatmessage/ChatMessage.dart';
+import '../websocket/WebSocketManager.dart';
 
 class ChatPage extends StatefulWidget {
   final WebSocketManager webSocketManager;

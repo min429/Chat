@@ -45,8 +45,6 @@ public class ChatService {
         // 모든 세션에 메시지 전송
         broadcastMessage("A new room has been created");
 
-        log.info("A new room has been created");
-
         return chatRoom;
     }
 

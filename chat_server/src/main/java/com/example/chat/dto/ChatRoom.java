@@ -29,8 +29,6 @@ public class ChatRoom {
             sessions.add(session);
             chatMessage.setMessage(chatMessage.getSender() + "님이 입장했습니다.");
         }
-        log.info("{}에 {}님이 입장했습니다.", roomId, chatMessage.getSender());
-
         sendMessage(chatMessage, chatService);
     }
 

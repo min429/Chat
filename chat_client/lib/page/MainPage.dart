@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:logger/logger.dart';
 
-import 'ChatMessage.dart';
+import '../dto/chatmessage/ChatMessage.dart';
 import 'ChatPage.dart';
-import 'ChatRoom.dart';
-import 'WebSocketManager.dart';
+import '../dto/ChatRoom.dart';
+import '../websocket/WebSocketManager.dart';
 
 final log = Logger();
 const userId = "seungmin";
