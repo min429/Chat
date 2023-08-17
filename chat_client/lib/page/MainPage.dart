@@ -76,13 +76,12 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _getChatRooms() async {
     final response = await http.get(
-      Uri.parse(AppConfig.httpUrl),
+      Uri.parse(AppConfig.httpUrl+"chat"),
     );
 
     // 응답 확인
     if (response.statusCode == 200) {
       List<dynamic> roomsJson = jsonDecode(response.body);
-      log.i(roomsJson);
       chatRooms = roomsJson.map((room) => ChatRoom.fromJson(room)).toList();
       chatPages = chatRooms.map((chatRoom) => ChatPage(manager: webSocketManager!, roomId: chatRoom.roomId)).toList();
       setState(() {}); // 채팅방 목록 업데이트를 위해 화면 갱신
