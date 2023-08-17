@@ -26,7 +26,6 @@ public class ChatService {
     }
 
     public List<ChatRoom> findAllRoom() {
-        log.info("find all room");
         return new ArrayList<>(chatRooms.values());
     }
 
@@ -34,11 +33,11 @@ public class ChatService {
         return chatRooms.get(roomId);
     }
 
-    public ChatRoom createRoom(String name) {
+    public ChatRoom createRoom(String roomName) {
         String randomId = UUID.randomUUID().toString();
         ChatRoom chatRoom = ChatRoom.builder()
                 .roomId(randomId)
-                .name(name)
+                .roomName(roomName)
                 .build();
         chatRooms.put(randomId, chatRoom);
         

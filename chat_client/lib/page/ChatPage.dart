@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../dto/chatmessage/ChatMessage.dart';
 import '../websocket/WebSocketManager.dart';
@@ -10,7 +7,7 @@ class ChatPage extends StatefulWidget {
   final WebSocketManager webSocketManager;
   final String roomId;
 
-  ChatPage({Key? key, required WebSocketManager manager, required this.roomId})
+  const ChatPage({Key? key, required WebSocketManager manager, required this.roomId})
       : webSocketManager = manager,
         super(key: key);
 
@@ -23,12 +20,12 @@ class _ChatPageState extends State<ChatPage> {
   final FocusNode _textFocus = FocusNode(); // 텍스트 입력 창에 포커스
   final List<String> _messages = <String>[];
 
-  void sendMessage(MessageType messageType, String name) {
+  void sendMessage(MessageType messageType, String userName) {
     if (_controller.text.isNotEmpty) {
       final chatMessage = ChatMessage(
         type: messageType,
         roomId: widget.roomId,
-        sender: name,
+        sender: userName,
         message: _controller.text,
       );
 
@@ -47,7 +44,7 @@ class _ChatPageState extends State<ChatPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Chat'),
+          title: Text('Chat'),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -56,7 +53,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             children: [
               Expanded(
@@ -80,14 +77,14 @@ class _ChatPageState extends State<ChatPage> {
                     child: TextField(
                       controller: _controller,
                       focusNode: _textFocus,
-                      decoration: const InputDecoration(labelText: 'Send a message'),
+                      decoration: InputDecoration(labelText: 'Send a message'),
                       onSubmitted: (text) {
                         sendMessage(MessageType.TALK, "seungmin");
                       },
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send),
+                    icon: Icon(Icons.send),
                     onPressed: () => sendMessage(MessageType.TALK, "seungmin"),
                   )
                 ],

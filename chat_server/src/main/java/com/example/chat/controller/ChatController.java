@@ -17,9 +17,8 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping
-    public ChatRoom createRoom(@RequestBody String name) {
-        log.info(name);
-        return chatService.createRoom(name);
+    public ChatRoom createRoom(@RequestBody String roomName) {
+        return chatService.createRoom(roomName);
     }
 
     @GetMapping

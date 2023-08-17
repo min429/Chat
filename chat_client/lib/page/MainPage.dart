@@ -5,27 +5,19 @@ import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:logger/logger.dart';
 
+import '../config/AppConfig.dart';
 import '../dto/chatmessage/ChatMessage.dart';
 import 'ChatPage.dart';
 import '../dto/ChatRoom.dart';
 import '../websocket/WebSocketManager.dart';
 
 final log = Logger();
-const userId = "seungmin";
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: MainPage(),
-    ),
-  );
-}
-
-void sendEnterMessage(ChatRoom chatRoom, WebSocketManager manager, String name) {
+void sendEnterMessage(ChatRoom chatRoom, WebSocketManager manager, String userName) {
   final chatMessage = ChatMessage(
     type: MessageType.ENTER,
     roomId: chatRoom.roomId,
-    sender: name,
+    sender: userName,
     message: '',
   );
   manager.sendMessage(chatMessage);
@@ -65,7 +57,7 @@ class _MainPageState extends State<MainPage> {
     // 웹소켓 연결
     try {
       final channel = WebSocketChannel.connect(
-        Uri.parse('ws://localhost:8080/ws/chat'),
+        Uri.parse(AppConfig.webSocketUrl),
       );
       webSocketManager = WebSocketManager(channel!);
 
@@ -84,7 +76,7 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _getChatRooms() async {
     final response = await http.get(
-      Uri.parse('http://localhost:8080/chat'),
+      Uri.parse(AppConfig.httpUrl),
     );
 
     // 응답 확인
@@ -94,7 +86,6 @@ class _MainPageState extends State<MainPage> {
       chatRooms = roomsJson.map((room) => ChatRoom.fromJson(room)).toList();
       chatPages = chatRooms.map((chatRoom) => ChatPage(manager: webSocketManager!, roomId: chatRoom.roomId)).toList();
       setState(() {}); // 채팅방 목록 업데이트를 위해 화면 갱신
-      log.i(chatRooms.first.name);
     } else {
       log.e('Failed to load rooms. ErrorCode: ${response.statusCode}');
     }
@@ -109,7 +100,6 @@ class _MainPageState extends State<MainPage> {
       },
       body: roomName,
     );
-    log.d('Response Body: ${response.body}');
 
     if(response.statusCode != 200){
       log.e('Failed to create room. ErrorCode: ${response.statusCode}');
@@ -117,7 +107,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   ChatPage _enterChatPage(index) {
-    sendEnterMessage(chatRooms[index], webSocketManager!, userId);
+    sendEnterMessage(chatRooms[index], webSocketManager!, AppConfig.userName);
     return chatPages[index];
   }
 
@@ -125,13 +115,13 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main Page'),
+        title: Text('Main Page'),
       ),
       body: ListView.builder(
         itemCount: chatRooms.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(chatRooms[index].name),
+            title: Text(chatRooms[index].roomName),
             onTap: () {
               Navigator.push(
                 context,
@@ -145,7 +135,7 @@ class _MainPageState extends State<MainPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createChatRoom('테스트 채팅방 ${count++}'),
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add),
       ),
     );
   }

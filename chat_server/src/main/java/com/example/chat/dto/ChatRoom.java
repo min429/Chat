@@ -14,14 +14,14 @@ import java.util.Set;
 @Getter
 public class ChatRoom {
     private String roomId;
-    private String name;
+    private String roomName;
     @JsonIgnore
     private Set<WebSocketSession> sessions = new HashSet<>(); // 해당 방의 세션 리스트
 
     @Builder
-    public ChatRoom(String roomId, String name) {
+    public ChatRoom(String roomId, String roomName) {
         this.roomId = roomId;
-        this.name = name;
+        this.roomName = roomName;
     }
 
     public void handlerActions(WebSocketSession session, ChatMessage chatMessage, ChatService chatService) {

@@ -1,13 +1,13 @@
 class ChatRoom {
   final String roomId;
-  final String name;
+  final String roomName;
 
-  ChatRoom({required this.roomId, required this.name});
+  ChatRoom({required this.roomId, required this.roomName});
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
       roomId: json['roomId'],
-      name: json['name'],
+      roomName: json['roomName'],
     );
   }
 }
