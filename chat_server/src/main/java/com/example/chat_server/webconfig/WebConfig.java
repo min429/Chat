@@ -1,4 +1,4 @@
-package com.example.chat.webconfig;
+package com.example.chat_server.webconfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

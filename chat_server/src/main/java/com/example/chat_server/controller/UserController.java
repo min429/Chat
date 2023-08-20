@@ -1,7 +1,7 @@
-package com.example.chat.controller;
+package com.example.chat_server.controller;
 
-import com.example.chat.dto.User;
-import com.example.chat.repository.UserRepository;
+import com.example.chat_server.dto.User;
+import com.example.chat_server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
-package com.example.chat.dto;
+package com.example.chat_server.dto;
 
-import com.example.chat.service.ChatService;
+import com.example.chat_server.service.ChatService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;

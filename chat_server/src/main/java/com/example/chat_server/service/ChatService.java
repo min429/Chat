@@ -1,6 +1,6 @@
-package com.example.chat.service;
+package com.example.chat_server.service;
 
-import com.example.chat.dto.ChatRoom;
+import com.example.chat_server.dto.ChatRoom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
