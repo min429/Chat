@@ -76,7 +76,7 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> _getChatRooms() async {
     final response = await http.get(
-      Uri.parse(AppConfig.httpUrl+"chat"),
+      Uri.parse("${AppConfig.httpUrl}chat"),
     );
 
     // 응답 확인

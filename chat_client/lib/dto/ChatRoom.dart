@@ -1,3 +1,6 @@
+import 'package:json_annotation/json_annotation.dart';
+
+@JsonSerializable()
 class ChatRoom {
   final String roomId;
   final String roomName;
@@ -9,5 +12,12 @@ class ChatRoom {
       roomId: json['roomId'],
       roomName: json['roomName'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'roomId': roomId,
+      'roomName': roomName,
+    };
   }
 }

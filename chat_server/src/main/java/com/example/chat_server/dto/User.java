@@ -4,20 +4,22 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user")
+@Getter
+@Setter
 public class User {
-
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "userId")
     private String userId;
 
-    @Column(name = "USER_PWD")
+    @Column(name = "userPwd")
     private String userPwd;
 
-    @Column(name = "USER_NAME")
+    @Column(name = "userName")
     private String userName;
 
-    // getters and setters
 }

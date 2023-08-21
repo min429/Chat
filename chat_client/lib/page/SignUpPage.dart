@@ -1,11 +1,12 @@
 import 'package:chat_client/dto/User.dart';
+import 'package:chat_client/page/MainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../config/AppConfig.dart';
-import 'MainPage.dart';
+import 'LoginPage.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -15,30 +16,61 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController userIdController = TextEditingController();
+  TextEditingController userPasswordController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
 
   bool isLoading = false; // 로딩 상태
 
   Future<String?> _signUp() async {
     var user = User(
-      userId: emailController.text,
-      userPwd: passwordController.text,
-      userName: usernameController.text,
+      userId: userIdController.text,
+      userPwd: userPasswordController.text,
+      userName: userNameController.text,
     );
-
     final response = await http.post(
-      Uri.parse('http://localhost:8080/ws/user'),
+      Uri.parse('${AppConfig.httpUrl}user'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(user),
     );
 
     if (response.statusCode == 200) {
-      AppConfig.userName = user.userId;
+      AppConfig.userName = user.userName;
       return 'success';
+    } else if(response.statusCode == 400) {
+      if (response.body == '이미 존재하는 아이디') {
+        return '이미 존재하는 아이디';
+      } else if (response.body == '이미 존재하는 닉네임') {
+        return '이미 존재하는 닉네임';
+      }
     } else {
       return 'fail';
+    }
+  }
+
+  void _handleSignUpResponse(String? result) {
+    if (result == 'success') {
+      // 회원가입이 성공했을 때 메세지 표시, 메인 페이지로 이동
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('회원가입 성공')),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else if(result == '이미 존재하는 아이디'){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('이미 존재하는 아이디 입니다.')),
+      );
+    } else if(result == '이미 존재하는 닉네임'){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('이미 존재하는 닉네임 입니다.')),
+      );
+    } else {
+      // 회원가입이 실패했을 때 메세지 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('회원가입 실패')),
+      );
     }
   }
 
@@ -54,17 +86,21 @@ class _SignUpPageState extends State<SignUpPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextField(
-              controller: usernameController,
-              decoration: InputDecoration(hintText: 'Username'),
+              controller: userIdController,
+              decoration: InputDecoration(hintText: 'Id'),
             ),
             TextField(
-              controller: emailController,
-              decoration: InputDecoration(hintText: 'Email'),
-            ),
-            TextField(
-              controller: passwordController,
+              controller: userPasswordController,
               decoration: InputDecoration(hintText: 'Password'),
               obscureText: true,
+            ),
+            TextField(
+              controller: userNameController,
+              decoration: InputDecoration(hintText: 'Name'),
+              onSubmitted: (_) async {  // 추가된 부분
+                String? result = await _signUp();
+                _handleSignUpResponse(result);
+              },
             ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -79,21 +115,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 setState(() {
                   isLoading = false; // 로딩 상태 종료
                 });
-                if (result == 'success') {
-                  // 회원가입이 성공했을 때 메세지 표시, 메인 페이지로 이동
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('회원가입 성공')),
-                  );
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => MainPage()),
-                  );
-                } else {
-                  // 회원가입이 실패했을 때 메세지 표시
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('회원가입 실패')),
-                  );
-                }
+                _handleSignUpResponse(result);
               },
               child: isLoading
                   ? CircularProgressIndicator(color: Colors.white) // 로딩 중일 때 표시될 위젯
