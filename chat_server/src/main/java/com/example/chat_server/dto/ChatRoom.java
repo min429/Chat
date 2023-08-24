@@ -1,7 +1,7 @@
 package com.example.chat_server.dto;
 
-import com.example.chat_server.service.ChatService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +12,21 @@ import java.util.Set;
 
 @Slf4j
 @Getter
+@Entity
+@Table(name = "chatroom")
 public class ChatRoom {
+    @Id
+    @Column(name = "room_id")
     private String roomId;
+
+    @Column(name = "room_name")
     private String roomName;
+
+    @Transient
     @JsonIgnore
     private Set<WebSocketSession> sessions = new HashSet<>(); // 해당 방의 세션 리스트
+
+    public ChatRoom() {}
 
     @Builder
     public ChatRoom(String roomId, String roomName) {
@@ -24,18 +34,11 @@ public class ChatRoom {
         this.roomName = roomName;
     }
 
-    public void handlerActions(WebSocketSession session, ChatMessage chatMessage, ChatService chatService) {
-        if (chatMessage.getType().equals(ChatMessage.MessageType.ENTER)) {
-            sessions.add(session);
-            chatMessage.setMessage(chatMessage.getSender() + "님이 입장했습니다.");
-        }
-        sendMessage(chatMessage, chatService);
+    public void addSession(WebSocketSession session) {
+        sessions.add(session);
     }
 
-    private <T> void sendMessage(T message, ChatService chatService) {
-        sessions.parallelStream()
-                .filter(session -> session.isOpen()) // 열려 있는 세션만 필터링
-                .forEach(session -> chatService.sendMessage(session, message));
+    public void removeSession(WebSocketSession session) {
+        sessions.remove(session);
     }
-
 }

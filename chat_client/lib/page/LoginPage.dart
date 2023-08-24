@@ -39,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       final user = User.fromJson(jsonDecode(response.body));
+      AppConfig.userId = user.userId;
       AppConfig.userName = user.userName;
       return true;
     }

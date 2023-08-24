@@ -13,7 +13,7 @@ class WebSocketManager {
   WebSocketManager(this.channel) {
     // websocket stream 리스너 등록
     channel.stream.asBroadcastStream().listen((message) {
-      if (message == "A new room has been created") {
+      if (message == "new room") {
         _roomCreatedStreamController.sink.add(message); // 새로운 방 생성 이벤트 트리거
         return;
       }

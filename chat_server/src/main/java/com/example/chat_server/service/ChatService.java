@@ -1,13 +1,14 @@
 package com.example.chat_server.service;
 
+import com.example.chat_server.dto.ChatMessage;
 import com.example.chat_server.dto.ChatRoom;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.context.event.EventListener;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,34 +18,44 @@ import java.util.*;
 @Service
 public class ChatService {
     private final ObjectMapper objectMapper;
-    private Map<String, ChatRoom> chatRooms;
+    private final UserChatRoomService userChatRoomService;
+    private final ChatRoomService chatRoomService;
     private List<WebSocketSession> sessions = new ArrayList<>(); // 전체 세션 리스트
 
-    @PostConstruct
-    private void init() {
-        chatRooms = new LinkedHashMap<>();
+    public void addSession(WebSocketSession session) {
+        sessions.add(session);
     }
 
-    public List<ChatRoom> findAllRoom() {
-        return new ArrayList<>(chatRooms.values());
+    public void removeSession(WebSocketSession session) {
+        sessions.remove(session);
     }
 
-    public ChatRoom findRoomById(String roomId) {
-        return chatRooms.get(roomId);
+    public void broadcastMessage(String message) {
+        sessions.parallelStream()
+                .forEach(session -> sendMessage(session, message));
     }
 
-    public ChatRoom createRoom(String roomName) {
-        String randomId = UUID.randomUUID().toString();
-        ChatRoom chatRoom = ChatRoom.builder()
-                .roomId(randomId)
-                .roomName(roomName)
-                .build();
-        chatRooms.put(randomId, chatRoom);
-        
-        // 모든 세션에 메시지 전송
-        broadcastMessage("A new room has been created");
+    /** 웹소켓 메세지 처리 **/
+    public void handlerActions(WebSocketSession session, ChatMessage chatMessage) {
+        ChatRoom chatRoom = chatRoomService.findRoomById(chatMessage.getRoomId());
+        if (chatMessage.getType().equals(ChatMessage.MessageType.ENTER)) {
+                chatRoom.addSession(session);
+                List<String> roomList = userChatRoomService.findChatRoomsByUserId(chatMessage.getSenderId());
+                if(!roomList.contains(chatMessage.getRoomId())){
+                    chatMessage.setMessage(chatMessage.getSender() + "님이 입장했습니다.");
+                    sendMessage(chatMessage, chatRoom);
+                    userChatRoomService.saveUserChatRoom(chatMessage);
+                }
+        }
+        else{
+            sendMessage(chatMessage, chatRoom);
+        }
+    }
 
-        return chatRoom;
+    private <T> void sendMessage(T message, ChatRoom chatRoom) {
+        chatRoom.getSessions().parallelStream()
+                .filter(session -> session.isOpen()) // 열려 있는 세션만 필터링
+                .forEach(session -> sendMessage(session, message));
     }
 
     public <T> void sendMessage(WebSocketSession session, T message) {
@@ -63,17 +74,9 @@ public class ChatService {
         }
     }
 
-    public void addSession(WebSocketSession session) {
-        sessions.add(session);
+    // 이벤트 구독
+    @EventListener
+    public void handleChatRoomCreatedEvent(ChatRoomService.ChatRoomCreatedEvent event) {
+        broadcastMessage("new room");
     }
-
-    public void removeSession(WebSocketSession session) {
-        sessions.remove(session);
-    }
-
-    public void broadcastMessage(String message) {
-        sessions.parallelStream()
-                .forEach(session -> sendMessage(session, message));
-    }
-
 }

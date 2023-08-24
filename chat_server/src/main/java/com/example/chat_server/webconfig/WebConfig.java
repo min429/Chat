@@ -6,7 +6,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 @Configuration
 public class WebConfig {
-
     @Bean
     public CharacterEncodingFilter characterEncodingFilter() {
         CharacterEncodingFilter filter = new CharacterEncodingFilter();

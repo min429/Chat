@@ -1,7 +1,9 @@
+import 'package:chat_client/page/MainPage.dart';
 import 'package:flutter/material.dart';
 
 import '../dto/chatmessage/ChatMessage.dart';
 import '../websocket/WebSocketManager.dart';
+import 'package:chat_client/config/AppConfig.dart';
 
 class ChatPage extends StatefulWidget {
   final WebSocketManager webSocketManager;
@@ -20,11 +22,12 @@ class _ChatPageState extends State<ChatPage> {
   final FocusNode _textFocus = FocusNode(); // 텍스트 입력 창에 포커스
   final List<String> _messages = <String>[];
 
-  void sendMessage(MessageType messageType, String userName) {
+  void sendMessage(MessageType messageType, String userId, String userName) {
     if (_controller.text.isNotEmpty) {
       final chatMessage = ChatMessage(
         type: messageType,
         roomId: widget.roomId,
+        senderId: userId,
         sender: userName,
         message: _controller.text,
       );
@@ -79,13 +82,13 @@ class _ChatPageState extends State<ChatPage> {
                       focusNode: _textFocus,
                       decoration: InputDecoration(labelText: 'Send a message'),
                       onSubmitted: (text) {
-                        sendMessage(MessageType.TALK, "seungmin");
+                        sendMessage(MessageType.TALK, AppConfig.userId, AppConfig.userName);
                       },
                     ),
                   ),
                   IconButton(
                     icon: Icon(Icons.send),
-                    onPressed: () => sendMessage(MessageType.TALK, "seungmin"),
+                    onPressed: () => sendMessage(MessageType.TALK, AppConfig.userId, AppConfig.userName),
                   )
                 ],
               )

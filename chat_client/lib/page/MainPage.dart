@@ -10,13 +10,15 @@ import '../dto/chatmessage/ChatMessage.dart';
 import 'ChatPage.dart';
 import '../dto/ChatRoom.dart';
 import '../websocket/WebSocketManager.dart';
+import 'package:chat_client/config/AppConfig.dart';
 
 final log = Logger();
 
-void sendEnterMessage(ChatRoom chatRoom, WebSocketManager manager, String userName) {
+void sendEnterMessage(ChatRoom chatRoom, WebSocketManager manager, String userId, String userName) {
   final chatMessage = ChatMessage(
     type: MessageType.ENTER,
     roomId: chatRoom.roomId,
+    senderId: userId,
     sender: userName,
     message: '',
   );
@@ -106,8 +108,43 @@ class _MainPageState extends State<MainPage> {
   }
 
   ChatPage _enterChatPage(index) {
-    sendEnterMessage(chatRooms[index], webSocketManager!, AppConfig.userName);
+    sendEnterMessage(chatRooms[index], webSocketManager!, AppConfig.userId, AppConfig.userName);
     return chatPages[index];
+  }
+
+  Future<void> _showCreateRoomDialog() async {
+    String? roomName;
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("새로운 채팅방 이름"),
+          content: TextField(
+            onChanged: (value) {
+              roomName = value;
+            },
+            decoration: InputDecoration(hintText: "채팅방 이름을 입력하세요."),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("확인"),
+              onPressed: () {
+                if (roomName != null && roomName!.isNotEmpty) {
+                  _createChatRoom(roomName!);
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text("취소"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -133,7 +170,7 @@ class _MainPageState extends State<MainPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _createChatRoom('테스트 채팅방 ${count++}'),
+        onPressed: () => _showCreateRoomDialog(),
         child: Icon(Icons.add),
       ),
     );

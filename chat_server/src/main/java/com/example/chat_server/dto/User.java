@@ -13,13 +13,12 @@ import lombok.Setter;
 @Setter
 public class User {
     @Id
-    @Column(name = "userId")
+    @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "userPwd")
+    @Column(name = "user_pwd")
     private String userPwd;
 
-    @Column(name = "userName")
+    @Column(name = "user_name")
     private String userName;
-
 }

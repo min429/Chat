@@ -1,7 +1,6 @@
 package com.example.chat_server.websocket;
 
 import com.example.chat_server.dto.ChatMessage;
-import com.example.chat_server.dto.ChatRoom;
 import com.example.chat_server.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         log.info("{}", payload);
         ChatMessage chatMessage = objectMapper.readValue(payload, ChatMessage.class);
 
-        ChatRoom chatRoom = chatService.findRoomById(chatMessage.getRoomId());
-        chatRoom.handlerActions(session, chatMessage, chatService);
+        chatService.handlerActions(session, chatMessage);
     }
 
     @Override
@@ -38,5 +36,4 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         chatService.removeSession(session);
     }
-
 }

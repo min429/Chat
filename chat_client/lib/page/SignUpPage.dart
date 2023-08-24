@@ -1,5 +1,4 @@
 import 'package:chat_client/dto/User.dart';
-import 'package:chat_client/page/MainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -35,14 +34,14 @@ class _SignUpPageState extends State<SignUpPage> {
     );
 
     if (response.statusCode == 200) {
-      AppConfig.userName = user.userName;
       return 'success';
     } else if(response.statusCode == 400) {
-      if (response.body == '이미 존재하는 아이디') {
+      if (response.body == '이미 존재하는 아이디')
         return '이미 존재하는 아이디';
-      } else if (response.body == '이미 존재하는 닉네임') {
+      else if (response.body == '이미 존재하는 닉네임')
         return '이미 존재하는 닉네임';
-      }
+      else if(response.body == '빈칸 존재')
+        return '빈칸 존재';
     } else {
       return 'fail';
     }
@@ -65,6 +64,10 @@ class _SignUpPageState extends State<SignUpPage> {
     } else if(result == '이미 존재하는 닉네임'){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('이미 존재하는 닉네임 입니다.')),
+      );
+    } else if(result == '빈칸 존재'){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('빈칸을 모두 채워주세요.')),
       );
     } else {
       // 회원가입이 실패했을 때 메세지 표시
